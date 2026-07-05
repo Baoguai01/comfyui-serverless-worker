@@ -1,139 +1,81 @@
 import json
 import base64
-import time
+import os
 import requests
 import runpod
 
-# =========================
-# ComfyUI 地址（容器内）
-# =========================
-COMFYUI_URL = "http://127.0.0.1:8188"
-
-# =========================
-# workflow 路径
-# =========================
-WORKFLOW_DIR = "/workspace/runpod-slim/AI-Project/workflows"
+COMFY_URL = os.getenv("COMFY_URL", "http://127.0.0.1:8188/prompt")
 
 
-# =========================
-# 读取 workflow
-# =========================
-def load_workflow(filename):
-    path = f"{WORKFLOW_DIR}/{filename}"
-    with open(path, "r") as f:
-        return json.load(f)
+# -----------------------------
+# 1. base64 -> ComfyUI input image
+# -----------------------------
+def save_base64_image(base64_str, filename="input.png"):
+    img_data = base64.b64decode(base64_str)
+    path = f"/tmp/{filename}"
+    with open(path, "wb") as f:
+        f.write(img_data)
+    return path
 
 
-# =========================
-# 上传图片到 ComfyUI
-# =========================
-def upload_image(image_base64, filename="input.png"):
-    image_bytes = base64.b64decode(image_base64)
-
-    files = {
-        "image": (filename, image_bytes, "image/png")
-    }
-
-    resp = requests.post(
-        f"{COMFYUI_URL}/upload/image",
-        files=files
-    )
-    resp.raise_for_status()
-
-    return resp.json()["name"]
-
-
-# =========================
-# 替换 workflow 中 LoadImage
-# =========================
-def patch_workflow(workflow, image_name):
+# -----------------------------
+# 2. 替换 workflow 参数
+# -----------------------------
+def prepare_workflow(workflow, prompt, image_path=None):
     for node_id, node in workflow.items():
-        if node.get("class_type") == "LoadImage":
-            node["inputs"]["image"] = image_name
+
+        # 文本 prompt
+        if "inputs" in node and "text" in node["inputs"]:
+            node["inputs"]["text"] = prompt
+
+        # LoadImage 节点
+        if node.get("class_type") == "LoadImage" and image_path:
+            node["inputs"]["image"] = image_path
+
     return workflow
 
 
-# =========================
-# 提交任务
-# =========================
-def queue_prompt(workflow):
-    resp = requests.post(
-        f"{COMFYUI_URL}/prompt",
-        json={"prompt": workflow}
-    )
-    resp.raise_for_status()
-    return resp.json()["prompt_id"]
+# -----------------------------
+# 3. 调用 ComfyUI
+# -----------------------------
+def run_comfy(workflow):
+    res = requests.post(COMFY_URL, json={"prompt": workflow})
+    return res.json()
 
 
-# =========================
-# 等待结果
-# =========================
-def wait_result(prompt_id, timeout=120):
-    start = time.time()
-
-    while time.time() - start < timeout:
-        history = requests.get(f"{COMFYUI_URL}/history/{prompt_id}")
-        if history.status_code == 200:
-            data = history.json()
-            if prompt_id in data and data[prompt_id]:
-                outputs = data[prompt_id]["outputs"]
-
-                images = []
-                for node in outputs.values():
-                    if "images" in node:
-                        for img in node["images"]:
-                            images.append(img["filename"])
-
-                return images
-
-        time.sleep(1)
-
-    raise TimeoutError("ComfyUI timeout")
-
-
-# =========================
-# 主 handler（RunPod入口）
-# =========================
+# -----------------------------
+# 4. RunPod Serverless 入口
+# -----------------------------
 def handler(event):
-    input_data = event["input"]
+    try:
+        input_data = event.get("input", {})
 
-    prompt = input_data.get("prompt", "")
-    image_base64 = input_data.get("image", None)
-    workflow_file = input_data.get("workflow", "flux-2img api.json")
+        prompt = input_data.get("prompt", "")
+        image_base64 = input_data.get("image")
 
-    # 1. load workflow
-    workflow = load_workflow(workflow_file)
+        # workflow
+        workflow_path = "/workspace/runpod-slim/AI-Project/workflows/flux-2img api.json"
 
-    # 2. upload image（如果有）
-    if image_base64:
-        image_name = upload_image(image_base64)
-        workflow = patch_workflow(workflow, image_name)
+        workflow = json.load(open(workflow_path, "r"))
 
-    # 3. 写入 prompt（CLIPTextEncode节点）
-    for node_id, node in workflow.items():
-        if node.get("class_type") == "CLIPTextEncode":
-            node["inputs"]["text"] = prompt
+        image_path = None
+        if image_base64:
+            image_path = save_base64_image(image_base64)
 
-    # 4. submit
-    prompt_id = queue_prompt(workflow)
+        workflow = prepare_workflow(workflow, prompt, image_path)
 
-    # 5. wait result
-    images = wait_result(prompt_id)
+        result = run_comfy(workflow)
 
-    # 6. return result
-    return {
-        "status": "success",
-        "prompt_id": prompt_id,
-        "images": images,
-        "image_url": [
-            f"{COMFYUI_URL}/view?filename={img}" for img in images
-        ]
-    }
+        return {
+            "status": "success",
+            "result": result
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
 
-# =========================
-# RunPod 启动
-# =========================
-runpod.serverless.start({
-    "handler": handler
-})
+runpod.serverless.start({"handler": handler})
