@@ -4,43 +4,153 @@ import base64
 import uuid
 import os
 import requests
+import subprocess
+import time
+import threading
 
 
-COMFYUI_URL="http://127.0.0.1:8188"
+# ==========================
+# 路径配置
+# ==========================
 
-WORKFLOW_PATH="/app/workflows/flux-2img-api.json"
+COMFYUI_PATH = "/workspace/runpod-slim/ComfyUI"
 
+COMFYUI_URL = "http://127.0.0.1:8188"
+
+
+WORKFLOW_PATH = "/app/workflows/flux-2img-api.json"
+
+
+INPUT_PATH = "/workspace/runpod-slim/ComfyUI/input"
+
+
+
+# ==========================
+# 启动 ComfyUI
+# ==========================
+
+def start_comfyui():
+
+
+    print("Starting ComfyUI...")
+
+
+    cmd = [
+
+        "python",
+
+        f"{COMFYUI_PATH}/main.py",
+
+        "--listen",
+
+        "127.0.0.1",
+
+        "--port",
+
+        "8188"
+
+    ]
+
+
+    subprocess.Popen(
+
+        cmd,
+
+        cwd=COMFYUI_PATH
+
+    )
+
+
+
+    for i in range(120):
+
+        try:
+
+            r=requests.get(
+
+                COMFYUI_URL,
+
+                timeout=3
+
+            )
+
+
+            if r.status_code == 200:
+
+                print("ComfyUI Ready")
+
+                return True
+
+
+        except Exception:
+
+            pass
+
+
+        time.sleep(2)
+
+
+
+    raise Exception(
+        "ComfyUI start timeout"
+    )
+
+
+
+
+
+# ==========================
+# 加载workflow
+# ==========================
 
 def load_workflow():
 
-    with open(WORKFLOW_PATH,"r") as f:
+    with open(
+        WORKFLOW_PATH,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
         return json.load(f)
 
 
 
+
+
+# ==========================
+# 保存base64图片
+# ==========================
+
 def save_image(base64_data):
 
-    input_dir="/workspace/ComfyUI/input"
 
     os.makedirs(
-        input_dir,
+
+        INPUT_PATH,
+
         exist_ok=True
+
     )
 
 
     filename="input.png"
 
 
-    path=os.path.join(
-        input_dir,
+    filepath=os.path.join(
+
+        INPUT_PATH,
+
         filename
+
     )
 
 
-    with open(path,"wb") as f:
+    with open(filepath,"wb") as f:
 
         f.write(
+
             base64.b64decode(base64_data)
+
         )
 
 
@@ -48,7 +158,14 @@ def save_image(base64_data):
 
 
 
+
+
+# ==========================
+# 提交ComfyUI
+# ==========================
+
 def queue_prompt(workflow):
+
 
     payload={
 
@@ -59,11 +176,14 @@ def queue_prompt(workflow):
     }
 
 
+
     r=requests.post(
 
         f"{COMFYUI_URL}/prompt",
 
-        json=payload
+        json=payload,
+
+        timeout=600
 
     )
 
@@ -72,53 +192,103 @@ def queue_prompt(workflow):
 
 
 
+
+
+# ==========================
+# RunPod handler
+# ==========================
+
 def handler(job):
 
 
     try:
 
 
-        inp=job["input"]
+        inp = job["input"]
 
 
-        prompt=inp.get(
+        prompt = inp.get(
+
             "prompt",
-            "换装"
+
+            "change clothes"
+
         )
 
 
-        image=inp["image"]
+        image = inp.get(
+
+            "image"
+
+        )
+
+
+        if not image:
+
+            raise Exception(
+                "image required"
+            )
 
 
 
-        workflow=load_workflow()
+        workflow = load_workflow()
 
 
 
-        # node 19
-        workflow["19"]["inputs"]["text"]=prompt
+        # ==================
+        # Node 19
+        # Prompt
+        # ==================
+
+        workflow["19"]["inputs"]["text"] = prompt
 
 
 
-        # node 63
-        filename=save_image(image)
+
+        # ==================
+        # Node 63
+        # 用户图片
+        # ==================
+
+        filename = save_image(image)
 
 
-        workflow["63"]["inputs"]["image"]=filename
+        workflow["63"]["inputs"]["image"] = filename
 
 
 
-        result=queue_prompt(workflow)
+
+        # ==================
+        # Node64
+        # 固定衣服图片
+        #
+        # workflow里面保持:
+        #
+        # clothes.jpg
+        #
+        # ==================
+
+
+
+        result = queue_prompt(
+
+            workflow
+
+        )
 
 
 
         return {
 
+
             "status":"success",
 
-            "prompt_id":result["prompt_id"]
+
+            "result":result
+
 
         }
+
 
 
 
@@ -127,12 +297,23 @@ def handler(job):
 
         return {
 
+
             "status":"error",
+
 
             "message":str(e)
 
+
         }
 
+
+
+
+# ==========================
+# 启动Serverless
+# ==========================
+
+start_comfyui()
 
 
 runpod.serverless.start({
