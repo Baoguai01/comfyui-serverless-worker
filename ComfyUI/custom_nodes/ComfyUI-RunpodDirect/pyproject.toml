@@ -1,0 +1,35 @@
+[project]
+name = "comfyui-runpoddirect"
+description = "Server-side model download extension for ComfyUI on Runpod - Download missing models directly to your pod with multi-connection downloads, queue management, and real-time progress tracking"
+version = "1.0.7"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Madiator2011"},
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "aiohttp>=3.8.0",
+]
+
+classifiers = [
+    # OS independent - works on all operating systems
+    "Operating System :: OS Independent",
+
+    # GPU support - works with any GPU accelerator
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Environment :: GPU :: AMD ROCm",
+    "Environment :: GPU :: Intel Arc",
+    "Environment :: GPU :: Apple Metal",
+]
+
+[project.urls]
+Repository = "https://github.com/MadiatorLabs/ComfyUI-RunpodDirect"
+Documentation = "https://github.com/MadiatorLabs/ComfyUI-RunpodDirect#readme"
+"Bug Tracker" = "https://github.com/MadiatorLabs/ComfyUI-RunpodDirect/issues"
+
+[tool.comfy]
+PublisherId = "madiator2011"
+DisplayName = "Madiator2011"
+Icon = "https://peer.madiator.cloud/lazy-static/avatars/769f014a-9bc4-45e4-8fb5-57512aea2e97.png"
+includes = []

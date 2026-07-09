@@ -1,0 +1,6 @@
+models/
+ComfyUI/models/
+__pycache__/
+*.pyc
+*.zip
+.git/

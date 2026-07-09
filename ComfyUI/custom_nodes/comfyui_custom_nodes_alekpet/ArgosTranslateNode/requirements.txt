@@ -1,0 +1,1 @@
+git+https://github.com/argosopentech/argos-translate.git@08f017c324628434d671cf4d191ce681c620ff33

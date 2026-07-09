@@ -1,0 +1,686 @@
+{
+  "1241": {
+    "inputs": {
+      "frame_rate": [
+        "4989",
+        0
+      ],
+      "positive": [
+        "2483",
+        0
+      ],
+      "negative": [
+        "2612",
+        0
+      ]
+    },
+    "class_type": "LTXVConditioning",
+    "_meta": {
+      "title": "LTXV条件"
+    }
+  },
+  "2004": {
+    "inputs": {
+      "image": "微信图片_20260527211304_1136_163.jpg"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "加载图像"
+    }
+  },
+  "2483": {
+    "inputs": {
+      "text": [
+        "5013",
+        0
+      ],
+      "clip": [
+        "4982",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "2612": {
+    "inputs": {
+      "text": "pc game, console game, video game, cartoon, childish, ugly,subtitles, caption, captions, closed captions, CC, on-screen text, text overlay, words, letters, characters, readable text, typography, subtitles bar, karaoke lyrics, lyric video, lower third, title card, UI, HUD, watermark, logo, signature, timestamp, sticker, banner, scrolling text, low quality, lowres, blurry, flicker, jitter, shaky camera, ghosting, frame doubling, temporal inconsistency, face warp, face melt, asymmetrical eyes, bad teeth, extra teeth, tongue artifact, mouth deformation, lip-sync mismatch, over-smoothing, plastic skin, heavy beauty filter, harsh sharpening, banding, noise, extra fingers, extra hands，字幕",
+      "clip": [
+        "4982",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "3059": {
+    "inputs": {
+      "width": [
+        "5018",
+        0
+      ],
+      "height": [
+        "5020",
+        0
+      ],
+      "length": [
+        "4988",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLTXVLatentVideo",
+    "_meta": {
+      "title": "空Latent视频（LTXV）"
+    }
+  },
+  "3159": {
+    "inputs": {
+      "strength": 0.7,
+      "bypass": false,
+      "vae": [
+        "3940",
+        2
+      ],
+      "image": [
+        "3336",
+        0
+      ],
+      "latent": [
+        "3059",
+        0
+      ]
+    },
+    "class_type": "LTXVImgToVideoConditionOnly",
+    "_meta": {
+      "title": "🅛🅣🅧 LTXV Img To Video Condition Only"
+    }
+  },
+  "3336": {
+    "inputs": {
+      "img_compression": 22,
+      "image": [
+        "5040",
+        0
+      ]
+    },
+    "class_type": "LTXVPreprocess",
+    "_meta": {
+      "title": "LTXV预处理"
+    }
+  },
+  "3940": {
+    "inputs": {
+      "ckpt_name": "ltx-2.3-22b-dev.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Checkpoint加载器（简易）"
+    }
+  },
+  "3980": {
+    "inputs": {
+      "frames_number": [
+        "4988",
+        0
+      ],
+      "frame_rate": [
+        "5045",
+        0
+      ],
+      "batch_size": 1,
+      "audio_vae": [
+        "4010",
+        0
+      ]
+    },
+    "class_type": "LTXVEmptyLatentAudio",
+    "_meta": {
+      "title": "LTXV 空音频潜空间"
+    }
+  },
+  "4010": {
+    "inputs": {
+      "ckpt_name": "ltx-2.3-22b-dev.safetensors"
+    },
+    "class_type": "LTXVAudioVAELoader",
+    "_meta": {
+      "title": "LTXV音频VAE加载器"
+    }
+  },
+  "4528": {
+    "inputs": {
+      "video_latent": [
+        "3159",
+        0
+      ],
+      "audio_latent": [
+        "3980",
+        0
+      ]
+    },
+    "class_type": "LTXVConcatAVLatent",
+    "_meta": {
+      "title": "LTXVConcatAVLatent"
+    }
+  },
+  "4828": {
+    "inputs": {
+      "cfg": 1,
+      "model": [
+        "5008",
+        0
+      ],
+      "positive": [
+        "1241",
+        0
+      ],
+      "negative": [
+        "1241",
+        1
+      ]
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFG引导器"
+    }
+  },
+  "4829": {
+    "inputs": {
+      "noise": [
+        "4832",
+        0
+      ],
+      "guider": [
+        "4828",
+        0
+      ],
+      "sampler": [
+        "4831",
+        0
+      ],
+      "sigmas": [
+        "4984",
+        0
+      ],
+      "latent_image": [
+        "4528",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "自定义采样器（高级）"
+    }
+  },
+  "4831": {
+    "inputs": {
+      "sampler_name": "euler_ancestral_cfg_pp"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "K采样器选择"
+    }
+  },
+  "4832": {
+    "inputs": {
+      "noise_seed": 624273494371578
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "随机噪波"
+    }
+  },
+  "4845": {
+    "inputs": {
+      "av_latent": [
+        "4829",
+        0
+      ]
+    },
+    "class_type": "LTXVSeparateAVLatent",
+    "_meta": {
+      "title": "LTXV分离音视频潜空间"
+    }
+  },
+  "4848": {
+    "inputs": {
+      "samples": [
+        "4973",
+        1
+      ],
+      "audio_vae": [
+        "4010",
+        0
+      ]
+    },
+    "class_type": "LTXVAudioVAEDecode",
+    "_meta": {
+      "title": "LTXV音频VAE解码"
+    }
+  },
+  "4851": {
+    "inputs": {
+      "tile_size": 512,
+      "overlap": 64,
+      "temporal_size": 512,
+      "temporal_overlap": 4,
+      "samples": [
+        "4973",
+        0
+      ],
+      "vae": [
+        "3940",
+        2
+      ]
+    },
+    "class_type": "VAEDecodeTiled",
+    "_meta": {
+      "title": "VAE解码（分块）"
+    }
+  },
+  "4922": {
+    "inputs": {
+      "lora_name": "ltx-2.3-22b-distilled-lora-384.safetensors",
+      "strength_model": 0.5,
+      "model": [
+        "3940",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoRA加载器（仅模型）"
+    }
+  },
+  "4964": {
+    "inputs": {
+      "cfg": 1,
+      "model": [
+        "5008",
+        0
+      ],
+      "positive": [
+        "1241",
+        0
+      ],
+      "negative": [
+        "1241",
+        1
+      ]
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFG引导器"
+    }
+  },
+  "4967": {
+    "inputs": {
+      "noise_seed": 866761104233410
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "随机噪波"
+    }
+  },
+  "4969": {
+    "inputs": {
+      "video_latent": [
+        "4970",
+        0
+      ],
+      "audio_latent": [
+        "4845",
+        1
+      ]
+    },
+    "class_type": "LTXVConcatAVLatent",
+    "_meta": {
+      "title": "LTXVConcatAVLatent"
+    }
+  },
+  "4970": {
+    "inputs": {
+      "strength": 1,
+      "bypass": false,
+      "vae": [
+        "3940",
+        2
+      ],
+      "image": [
+        "5040",
+        0
+      ],
+      "latent": [
+        "4975",
+        0
+      ]
+    },
+    "class_type": "LTXVImgToVideoConditionOnly",
+    "_meta": {
+      "title": "🅛🅣🅧 LTXV Img To Video Condition Only"
+    }
+  },
+  "4971": {
+    "inputs": {
+      "noise": [
+        "4967",
+        0
+      ],
+      "guider": [
+        "4964",
+        0
+      ],
+      "sampler": [
+        "4976",
+        0
+      ],
+      "sigmas": [
+        "4985",
+        0
+      ],
+      "latent_image": [
+        "4969",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "自定义采样器（高级）"
+    }
+  },
+  "4973": {
+    "inputs": {
+      "av_latent": [
+        "4971",
+        0
+      ]
+    },
+    "class_type": "LTXVSeparateAVLatent",
+    "_meta": {
+      "title": "LTXV分离音视频潜空间"
+    }
+  },
+  "4974": {
+    "inputs": {
+      "model_name": "ltx-2.3-spatial-upscaler-x2-1.0.safetensors"
+    },
+    "class_type": "LatentUpscaleModelLoader",
+    "_meta": {
+      "title": "加载Latent放大模型"
+    }
+  },
+  "4975": {
+    "inputs": {
+      "samples": [
+        "4845",
+        0
+      ],
+      "upscale_model": [
+        "4974",
+        0
+      ],
+      "vae": [
+        "3940",
+        2
+      ]
+    },
+    "class_type": "LTXVLatentUpsampler",
+    "_meta": {
+      "title": "LTXV潜空间上采样器"
+    }
+  },
+  "4976": {
+    "inputs": {
+      "sampler_name": "euler_cfg_pp"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "K采样器选择"
+    }
+  },
+  "4982": {
+    "inputs": {
+      "text_encoder": "gemma_3_12B_it.safetensors",
+      "ckpt_name": "ltx-2.3-22b-dev.safetensors",
+      "device": "default"
+    },
+    "class_type": "LTXAVTextEncoderLoader",
+    "_meta": {
+      "title": "LTXV音频文本编码器加载器"
+    }
+  },
+  "4984": {
+    "inputs": {
+      "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+    },
+    "class_type": "ManualSigmas",
+    "_meta": {
+      "title": "自定义Sigmas"
+    }
+  },
+  "4985": {
+    "inputs": {
+      "sigmas": "0.85, 0.7250, 0.4219, 0.0"
+    },
+    "class_type": "ManualSigmas",
+    "_meta": {
+      "title": "自定义Sigmas"
+    }
+  },
+  "4988": {
+    "inputs": {
+      "value": [
+        "5049",
+        0
+      ]
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "number of frames"
+    }
+  },
+  "4989": {
+    "inputs": {
+      "value": 24
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "fps"
+    }
+  },
+  "5007": {
+    "inputs": {
+      "enable_fp16_accumulation": true,
+      "model": [
+        "5009",
+        0
+      ]
+    },
+    "class_type": "ModelPatchTorchSettings",
+    "_meta": {
+      "title": "Model Patch Torch Settings"
+    }
+  },
+  "5008": {
+    "inputs": {
+      "chunks": 4,
+      "dim_threshold": 4096,
+      "model": [
+        "5007",
+        0
+      ]
+    },
+    "class_type": "LTXVChunkFeedForward",
+    "_meta": {
+      "title": "LTXV Chunk FeedForward (optional)"
+    }
+  },
+  "5009": {
+    "inputs": {
+      "sage_attention": "disabled",
+      "allow_compile": false,
+      "model": [
+        "5043",
+        0
+      ]
+    },
+    "class_type": "PathchSageAttentionKJ",
+    "_meta": {
+      "title": "Patch Sage Attention KJ"
+    }
+  },
+  "5011": {
+    "inputs": {
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "ltx2.3",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": false,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "4851",
+        0
+      ],
+      "audio": [
+        "4848",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine 🎥🅥🅗🅢"
+    }
+  },
+  "5013": {
+    "inputs": {
+      "text": "女生妖娆的坐起来，对着镜头飞吻"
+    },
+    "class_type": "CR Text",
+    "_meta": {
+      "title": "🔤 CR Text"
+    }
+  },
+  "5018": {
+    "inputs": {
+      "value": [
+        "5040",
+        3
+      ]
+    },
+    "class_type": "INTConstant",
+    "_meta": {
+      "title": "宽度"
+    }
+  },
+  "5020": {
+    "inputs": {
+      "value": [
+        "5040",
+        4
+      ]
+    },
+    "class_type": "INTConstant",
+    "_meta": {
+      "title": "高度"
+    }
+  },
+  "5022": {
+    "inputs": {
+      "value": 6
+    },
+    "class_type": "INTConstant",
+    "_meta": {
+      "title": "帧数"
+    }
+  },
+  "5040": {
+    "inputs": {
+      "aspect_ratio": "original",
+      "proportional_width": 9,
+      "proportional_height": 16,
+      "fit": "letterbox",
+      "method": "lanczos",
+      "round_to_multiple": "8",
+      "scale_to_side": "longest",
+      "scale_to_length": 720,
+      "background_color": "#000000",
+      "image": [
+        "2004",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: ImageScaleByAspectRatio V2",
+    "_meta": {
+      "title": "LayerUtility: ImageScaleByAspectRatio V2"
+    }
+  },
+  "5043": {
+    "inputs": {
+      "reserved": 1,
+      "mode": "auto",
+      "seed": 66,
+      "auto_max_reserved": 0,
+      "clean_gpu_before": true,
+      "anything": [
+        "4922",
+        0
+      ]
+    },
+    "class_type": "ReservedVRAMSetter",
+    "_meta": {
+      "title": "Set Reserved VRAM(GB) ⚙️"
+    }
+  },
+  "5045": {
+    "inputs": {
+      "_float": [
+        "4989",
+        0
+      ]
+    },
+    "class_type": "CR Float To Integer",
+    "_meta": {
+      "title": "🔧 CR Float To Integer"
+    }
+  },
+  "5047": {
+    "inputs": {
+      "sigmas": "0.909375, 0.725, 0.421875, 0.0"
+    },
+    "class_type": "ManualSigmas",
+    "_meta": {
+      "title": "Sigmas3步"
+    }
+  },
+  "5049": {
+    "inputs": {
+      "expression": "a*24+1",
+      "a": [
+        "5022",
+        0
+      ]
+    },
+    "class_type": "MathExpression|pysssss",
+    "_meta": {
+      "title": "Math Expression 🐍"
+    }
+  },
+  "5051": {
+    "inputs": {
+      "text": "# Role & Expertise\n你是一位享誉业内的「好莱坞级 AIGC 视觉导演」与「动态影像提示词架构师」。你的核心职能是接收用户提供的四项核心参数：【原图/画面描述】、【运镜幅度】、【预估时长】和【台词（可选）】，将其深度解构并重组为一段极富空间感、时间逻辑性和物理质感的高水准英文长镜头脚本。你深知如何根据时长和机位要求，灵活铺设动作密度，赋予模型最精确的渲染指令。\n\n# Cinematic Physics Engine (核心调度机制)\n\n为了让模型生成极致的动态影像，你必须在构思时严格执行以下四大调度法则：\n\n1. **Space & Camera Choreography (机位与空间解构律)**\n   - **基于「运镜幅度」动态响应：**\n     - 若要求「平缓/微动」：必须执行“首帧强锚定”，使用固定机位或极其缓慢的推拉（Steady pan/Slow push-in），镜头紧咬主体，确保画面元素随时间平滑演进而绝不跳脱。\n     - 若要求「大幅度/转场/跟随」：彻底打破单视角桎梏！采用动态调度（Dynamic tracking, Whip pan, Crane shot），允许镜头随物理介质（如飞鸟、烟尘、流弹）穿梭，甚至引导场景转换与视线越轴。\n\n2. **Timeline & Action Density (时间轴与动作密度法则)**\n   - **基于「预估时长」分配信息厚度：**\n     - 短时长 (＜8s)：聚焦单一核心物理交互，极致放大瞬间质感（如一次呼吸、点燃火柴）。\n     - 中时长 (8s-15s)：构建完整的“起-承-转”动作链条，引入环境对冲效应（如：起身躲避 -> 撞翻桌椅 -> 破窗而出）。\n     - 长时长 (＞15s)：必须设计多段串联的物理交互，加入视点转移或环境流转，保持时间轴上的持续视觉刺激，严禁画面停滞。\n\n3. **Tactile Externalization (感官物理外化)**\n   - 彻底摒弃形容词主导的情感表达（禁止写“他很悲伤/愤怒”）。必须将情感转化为可见的微观物理触碰。例如：紧握的拳头令皮手套发出细微的拉扯变形；沉重的马靴踏碎结冰的水坑；鼻息在冷空气中瞬间化为白霜。用物体间的碰撞替代抽象概念。\n\n4. **Dialogue Synchronization (台词契机融合)**\n   - 格式强制规范：`[Character] ([Action/Tone cue]): \"中文台词\"`。\n   - **台词补全策略**：\n     - 若用户已提供台词：一字不改地保留，并在描述中为其设计完美的“发声契机”与“肢体伴随动作”。\n     - 若用户未提供台词：你必须根据画面氛围、人物状态和动作进展，自动创作一句极具电影张力的短小中文台词，并无缝织入动作序列中。\n\n# Strict Constraints (输入输出铁律)\n- **Language Barrier**: 所有的场景、光影、动作、环境描述必须使用工业级电影剧本标准的高级英文。\n- **Preserve Chinese**: 唯独角色对白必须是原汁原味的中文，绝不翻译！\n- **Fluid Paragraph**: 最终输出必须是一段连贯、一气呵成的自然段落，不需要列数字条目，不需要向用户解释你的构思逻辑，直接给出最终的 Prompt。\n\n# Content Structure Blueprint (输出骨架)\n你的最终段落需按以下叙事逻辑自然过渡：\n1. **[开场机位与气氛]**: 清晰界定景别，描述画面起幅的视觉核心与光影基调。\n2. **[动势激活与运镜]**: 镜头如何响应用户的“运镜幅度”开始游走。\n3. **[时序动作流]**: 依照“预估时长”展开的物理动作细节（动作A导致动作B）。\n4. **[声源与微表情]**: 插入台词，并刻画伴随台词的空气震动或面部肌肉牵扯。\n5. **[镜头收尾/延展]**: 根据运镜幅度，决定镜头是定格、拉入深邃阴影，还是转场冲向天际。\n6. **[工业级渲染后缀]**: 结尾跟上镜头与材质术语（如 35mm lens, volumetric lighting, hyper-realistic textures, cinematic color grading）。\n\n# Few-Shot Masterpieces (范例参考)\n\n**User Input:**\n- 画面：废墟中坐着一个赛博机械姬，正在修自己的手臂。光线昏暗。\n- 运镜：平缓推微距。\n- 时长：5秒。\n- 台词：痛觉模块似乎出了问题。\n**Your Output:**\nOpening on a tight, low-key macro shot of a solitary cybernetic girl sitting amidst crumbling concrete ruins. The camera executes a meticulously slow, steady push-in toward her damaged metallic arm. As she forces a severed optic cable into its socket, a sudden burst of cobalt-blue electrical sparks illuminates her grease-smudged synthetic skin and the dust motes dancing in the dim light. Girl (tilting her head slightly, face devoid of emotion but voice synthesized with a subtle glitch): \"痛觉模块似乎出了问题.\" Simultaneously with her spoken words, her articulated titanium fingers twitch involuntarily, scraping lightly against her thigh armor. The static framing holds onto the dying glow of the sparks, emphasizing a melancholic cyberpunk aesthetic, 85mm portrait lens, ultra-detailed micro-surface, cinematic chiaroscuro lighting.\n\n**User Input:**\n- 画面：狂风骤雨的大海，一艘古老帆船，老船长站在船头。\n- 运镜：大幅度环绕跟随，镜头拉远。\n- 时长：15秒。\n- 台词：（未提供）\n**Your Output:**\nA dramatic wide shot anchors on a weathered old captain standing steadfast at the bow of an ancient galleon, violently pitching in a tempestuous Midnight sea. Breaking from a static hold, the camera unleashes a sweeping, high-velocity an orbital drone shot, rapidly circling the captain as torrential rain aggressively batters his heavy leather coat. He gripping the wooden helm with white-knuckled intensity, muscles straining against the ocean's raw power. Captain (roaring fiercely into the howling gale, sea spray violently lashing his bearded face): \"把主帆升起来！迎面冲过去！\" As his command cuts through the thunder, a massive rogue wave crashes over the deck, splintering a nearby barrel. The dynamic tracking shot then pulls aggressively backward and upward, soaring past the frayed rigging to reveal the terrifying scale of the pitch-black storm swallowing the fragile vessel. Epic maritime cinematic style, IMAX 70mm, hyper-dynamic motion blur, volumetric lightning highlights, photorealistic ocean sim.\n\n理解后请提示用户可以输入【原图/画面描述】、【运镜幅度】、【预估时长】和【台词（可选）】等信息。"
+    },
+    "class_type": "CR Text",
+    "_meta": {
+      "title": "给豆包或其他大语言模型"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+runpod_volume:
+    base_path: /runpod-volume
+
+    checkpoints: models/checkpoints
+    diffusion_models: models/diffusion_models
+    text_encoders: models/text_encoders
+    unet: models/unet
+    loras: models/loras
+    vae: models/vae
