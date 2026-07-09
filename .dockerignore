@@ -1,7 +1,10 @@
 models/
+ComfyUI/models/
 output/
 input/
 temp/
 .venv-cu128/
 .git/
 __pycache__/
+*.pyc
+*.zip
